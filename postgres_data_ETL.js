@@ -32,7 +32,7 @@ const pool = new Pool({
 // })
 
 // const questionsSchema = 'CREATE TABLE questions (id serial PRIMARY KEY, product_id int NOT NULL, body varchar(1000) NOT NULL, date_written bigint, asker_name varchar(60) NOT NULL, asker_email varchar(60) NOT NULL, reported int, helpful int NOT NULL)';
-const questionsSchema = 'CREATE TABLE questions (id SERIAL PRIMARY KEY, product_id int NOT NULL, body varchar(1000) NOT NULL, date_written bigint, asker_name varchar(60) NOT NULL, asker_email varchar(60) NOT NULL, reported int, helpful int DEFAULT 0)';
+const questionsSchema = 'CREATE TABLE questions (id SERIAL PRIMARY KEY, product_id int NOT NULL, body varchar(1000) NOT NULL, date_written double precision, asker_name varchar(60) NOT NULL, asker_email varchar(60) NOT NULL, reported int, helpful int DEFAULT 0)';
 
 const questionsCVS = "COPY questions FROM '/Users/bentanaka/QandA-API-Service/questions.csv' DELIMITER ',' CSV HEADER";
 
@@ -61,7 +61,8 @@ pool.query(questionsSchema, (err, res)=> {
                 pool.end();
               } else {
                 console.log('changed ID so its synced and next inserted row wont try to be ID 2');
-                pool.query('ALTER TABLE questions ALTER COLUMN date_written TYPE timestamp USING to_timestamp(written_date)', (err, res)=> {
+
+                pool.query("ALTER TABLE questions ALTER COLUMN date_written type varchar(60) USING to_char(to_timestamp(date_written/1000.0) at time zone 'UTC', 'yyyy-mm-ddThh24:mi:ss.ff3Z')", (err, res)=> {
                   if (err) {
                     console.log(err)
                     pool.end();

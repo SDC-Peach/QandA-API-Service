@@ -1,7 +1,8 @@
 const axios = require('axios');
 const {TOKEN, URL} = require('./config.js');
 
-const prodID = '66644'
+let prodID = '66644'
+prodID = '66642'
 axios({
   method: 'get',
   url: `${URL}/qa/questions/?product_id=${prodID}&page=1&count=${10000}`,

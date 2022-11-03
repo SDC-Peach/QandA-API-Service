@@ -1,8 +1,8 @@
 const { Client, Pool } = require('pg')
-const {POSTGRESQL_PASSWORD, POSTGRESQL_PORT} = require('./config.js');
+const {POSTGRESQL_USER, POSTGRESQL_PASSWORD, POSTGRESQL_PORT} = require('./config.js');
 
 const pool = new Pool({
-  user: 'bentanaka',
+  user: POSTGRESQL_USER,
   host: 'localhost',
   database: 'qanda',
   password: POSTGRESQL_PASSWORD,
@@ -31,7 +31,7 @@ pool.query(photosSchema, (err, res)=> {
   }
 })
 
-const questionsSchema = 'CREATE TABLE questions (id int NOT NULL PRIMARY KEY, product_id int NOT NULL, body varchar(1000) NOT NULL, date_written_untransformed bigint, asker_name varchar(60) NOT NULL, asker_email varchar(60) NOT NULL, reported int NOT NULL, helpful int NOT NULL)';
+const questionsSchema = 'CREATE TABLE questions (id int NOT NULL PRIMARY KEY, product_id int NOT NULL, body varchar(1000) NOT NULL, date_written bigint, asker_name varchar(60) NOT NULL, asker_email varchar(60) NOT NULL, reported int NOT NULL, helpful int NOT NULL)';
 
 const questionsCVS = "COPY questions FROM '/Users/bentanaka/QandA-API-Service/questions.csv' DELIMITER ',' CSV HEADER";
 
@@ -53,7 +53,7 @@ pool.query(questionsSchema, (err, res)=> {
   }
 })
 
-const answersSchema = 'CREATE TABLE answers (id int NOT NULL PRIMARY KEY, question_id int NOT NULL, body varchar(1000) NOT NULL, date_written_untransformed bigint, answerer_name varchar(60) NOT NULL, answerer_email varchar(60) NOT NULL, reported int NOT NULL, helpful int NOT NULL)';
+const answersSchema = 'CREATE TABLE answers (id int NOT NULL PRIMARY KEY, question_id int NOT NULL, body varchar(1000) NOT NULL, date_written bigint, answerer_name varchar(60) NOT NULL, answerer_email varchar(60) NOT NULL, reported int NOT NULL, helpful int NOT NULL)';
 
 const answersCVS = "COPY answers FROM '/Users/bentanaka/QandA-API-Service/answers.csv' DELIMITER ',' CSV HEADER";
 

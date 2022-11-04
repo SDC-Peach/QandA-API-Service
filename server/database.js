@@ -9,47 +9,35 @@ const pool = new Pool({
   port: POSTGRESQL_PORT,
 })
 
-const getQuestions = function (product_id, count, successCB, errCB) {
+const getQuestions = function (product_id, count) {
+  return pool.query(`SELECT * FROM questions WHERE product_id='${product_id}' LIMIT ${count}`)
+}
 
-    // const crazyQuery = `INSERT INTO joined (question_id, question_body, question_date, asker_name, asker_email, question_helpfulness, reported, answers)
-    // SELECT q.question_id, q.question_body, q.question_date, q.asker_name, q.asker_email, q.question_helpfulness, q.reported, array_agg(answers)
-    // FROM questions q WHERE product_id='${product_id}' LIMIT ${count}
-    //   JOIN answers a ON a.question_id = q.question_id
-    // GROUP BY q.question_id, q.question_id`
+const getQuestionAnswers = function (product_id, count) {
+  return pool.query(`SELECT * FROM answers WHERE question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' LIMIT ${count})`)
+}
 
-  return pool.connect()
-  .then(client=> {
-    return client
-      .query(`SELECT * FROM answers WHERE question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' LIMIT ${count})`)
-      .then(res => {
-        client.release();
-        successCB(res.rows);
-      })
-      .catch(err => {
-        console.log(err)
-        client.release();
-        errCB(err.stack);
-      })
-  })
+const getQuestionAnswersPhotos = function (product_id, count) {
+  return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' LIMIT ${count}))`)
+}
 
-  // return pool.connect()
-  // .then(client=> {
-  //   return client
-  //     .query(`SELECT * FROM questions WHERE product_id='${product_id}' LIMIT ${count}`)
-  //     // .query(crazyQuery)
-  //     .then(res => {
-  //       client.release();
-  //       successCB({product_id: product_id,
-  //         results: res.rows
-  //         });
-  //     })
-  //     .catch(err => {
-  //       client.release();
-  //       errCB(err.stack);
-  //     })
-  // })
+const getAnswers = function (question_id, count) {
+  console.log (...arguments)
+  return pool.query(`SELECT * FROM answers WHERE question_id='${question_id}' LIMIT ${count}`)
+}
+const getAnswersPhotos = function (question_id, count) {
+  return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE question_id='${question_id}' LIMIT ${count})`)
+}
+
+const saveQuestion = function(formData) {
+  return pool.query('INSERT INTO questions (product_id, question_body, asker_name, asker_email) VALUES ($1, $2, $3, $4)', [formData.product_id, formData.body, formData.name, formData.email])
 }
 
 module.exports = {
-  getQuestions: getQuestions
+  getQuestions: getQuestions,
+  getQuestionAnswers: getQuestionAnswers,
+  getQuestionAnswersPhotos: getQuestionAnswersPhotos,
+  getAnswers: getAnswers,
+  getAnswersPhotos: getAnswersPhotos,
+  saveQuestion: saveQuestion
 }

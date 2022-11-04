@@ -1,5 +1,5 @@
 const express = require('express');
-const {getQuestions, getQuestionAnswers, getQuestionAnswersPhotos, getAnswers, getAnswersPhotos, saveQuestion, saveAnswer, savePhotos, incrementHelpfulnessCount} = require('./database.js')
+const {getQuestions, getQuestionAnswers, getQuestionAnswersPhotos, getAnswers, getAnswersPhotos, saveQuestion, saveAnswer, savePhotos, incrementQuestionHelpfulnessCount, flagQuestionAsReported, incrementAnswerHelpfulnessCount, flagAnswerAsReported} = require('./database.js')
 
 var app = express();
 app.use(express.json());
@@ -20,7 +20,6 @@ app.get('/qa/questions', (req, res)=> {
 
   Promise.all([promise1, promise2, promise3])
   .then(([questions, answers, photos])=> {
-
     if (questions === 'err' || answers === 'err' || photos === 'err') {
       res.status(500).send()
     } else {
@@ -129,7 +128,46 @@ app.post('/qa/questions/:*/answers', (req, res)=> {
 
 app.put('/qa/questions/:*/helpful', (req, res)=> {
   let question_id = req.query.question_id || req.params[0];
+  incrementQuestionHelpfulnessCount(question_id)
+  .then(val=>{
+    res.status(204).send();
+  })
+  .catch(err=>{
+    res.status(500).send();
+  })
+})
 
+app.put('/qa/questions/:*/report', (req, res)=> {
+  let question_id = req.query.question_id || req.params[0];
+  flagQuestionAsReported(question_id)
+  .then(val=>{
+    res.status(204).send();
+  })
+  .catch(err=>{
+    res.status(500).send();
+  })
+})
+
+app.put('/qa/answers/:*/helpful', (req, res)=> {
+  let answer_id = req.query.answer_id || req.params[0];
+  incrementAnswerHelpfulnessCount(answer_id)
+  .then(val=>{
+    res.status(204).send();
+  })
+  .catch(err=>{
+    res.status(500).send();
+  })
+})
+
+app.put('/qa/answers/:*/report', (req, res)=> {
+  let answer_id = req.query.answer_id || req.params[0];
+  flagAnswerAsReported(answer_id)
+  .then(val=>{
+    res.status(204).send();
+  })
+  .catch(err=>{
+    res.status(500).send();
+  })
 })
 
 app.listen(3000);

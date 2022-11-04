@@ -10,23 +10,24 @@ const pool = new Pool({
 })
 
 const getQuestions = function (product_id, count) {
-  return pool.query(`SELECT * FROM questions WHERE product_id='${product_id}' LIMIT ${count}`)
+  return pool.query(`SELECT * FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}`)
 }
 
 const getQuestionAnswers = function (product_id, count) {
-  return pool.query(`SELECT * FROM answers WHERE question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' LIMIT ${count})`)
+  return pool.query(`SELECT * FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count})`)
 }
 
 const getQuestionAnswersPhotos = function (product_id, count) {
-  return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' LIMIT ${count}))`)
+  return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}))`)
 }
 
 const getAnswers = function (question_id, count) {
-  console.log (...arguments)
-  return pool.query(`SELECT * FROM answers WHERE question_id='${question_id}' LIMIT ${count}`)
+
+  return pool.query(`SELECT * FROM answers WHERE reported = false AND question_id='${question_id}' LIMIT ${count}`)
 }
+
 const getAnswersPhotos = function (question_id, count) {
-  return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE question_id='${question_id}' LIMIT ${count})`)
+  return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE reported = false AND question_id='${question_id}' LIMIT ${count})`)
 }
 
 const saveQuestion = function(formData) {
@@ -45,8 +46,20 @@ const savePhotos = function(answer_id, photos) {
   return pool.query(`INSERT INTO photos (answer_id, url) VALUES ${photos}`)
 }
 
-function incrementHelpfulnessCount () {
+function incrementQuestionHelpfulnessCount (question_id) {
+  return pool.query(`UPDATE questions SET question_helpfulness = question_helpfulness + 1 WHERE question_id = ${question_id}`)
+}
 
+function flagQuestionAsReported (question_id) {
+  return pool.query(`UPDATE questions SET reported = true WHERE question_id = ${question_id}`)
+}
+
+function incrementAnswerHelpfulnessCount(answer_id) {
+  return pool.query(`UPDATE answers SET helpfulness = helpfulness + 1 WHERE answer_id = ${answer_id}`)
+}
+
+function flagAnswerAsReported(answer_id) {
+  return pool.query(`UPDATE answers SET reported = true WHERE answer_id = ${answer_id}`)
 }
 
 module.exports = {
@@ -58,5 +71,8 @@ module.exports = {
   saveQuestion: saveQuestion,
   saveAnswer: saveAnswer,
   savePhotos: savePhotos,
-  incrementHelpfulnessCount: incrementHelpfulnessCount
+  incrementQuestionHelpfulnessCount: incrementQuestionHelpfulnessCount,
+  flagQuestionAsReported: flagQuestionAsReported,
+  incrementAnswerHelpfulnessCount: incrementAnswerHelpfulnessCount,
+  flagAnswerAsReported: flagAnswerAsReported
 }

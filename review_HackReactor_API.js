@@ -25,5 +25,12 @@ prodID = '66642'
 // axios.get('http://localhost:3000/qa/questions/:234328/answers', {params: {page: 1, count: 100}})
 // .then((res)=> console.log(res.data))
 
-axios.post('http://localhost:3000/qa/questions', {name: 'and I am bob!'})
+// axios.post('http://localhost:3000/qa/questions', {body: 'testing-ben! tadf', name: 'bobby Joe', email: 'bb@gmail.com', product_id: 66642})
+// .then((res)=> console.log(res.data))
+
+// axios.post('http://localhost:3000/qa/questions/:88888/answers', {body: 'testing-ben! tadf', name: 'bobby Joe', photos: ['url1','url2','url3']})
+// .then((res)=> console.log(res.data))
+
+
+axios.post('http://localhost:3000/qa/questions/:question_id/answers', {body: 'newesttestBEN', name: 'bobby', email: 'b@gmail.com', photos: []}, {params: {question_id: 234332}})
 .then((res)=> console.log(res.data))

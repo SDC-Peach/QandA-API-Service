@@ -1,5 +1,5 @@
 const express = require('express');
-const {getQuestions, getQuestionAnswers, getQuestionAnswersPhotos, getAnswers, getAnswersPhotos, saveQuestion} = require('./database.js')
+const {getQuestions, getQuestionAnswers, getQuestionAnswersPhotos, getAnswers, getAnswersPhotos, saveQuestion, saveAnswer, savePhotos, incrementHelpfulnessCount} = require('./database.js')
 
 var app = express();
 app.use(express.json());
@@ -89,16 +89,48 @@ app.get('/qa/questions/:*/answers', (req, res)=> {
 app.post('/qa/questions', (req, res)=> {
   saveQuestion(req.body)
   .then(val=> {
-
+    console.log('saved!')
     res.status(201).send()
   })
   .catch(err=> {
     console.log('server failed to save new question to DB')
     res.status(500).send()
   })
-
 })
 
+app.post('/qa/questions/:*/answers', (req, res)=> {
+  let question_id = req.query.question_id || req.params[0];
+
+  saveAnswer(question_id, req.body)
+  .then(generatedAnswerID=> {
+    generatedAnswerID = generatedAnswerID.rows[0].answer_id;
+
+    if (req.body.photos.length > 0) {
+      savePhotos(generatedAnswerID, req.body.photos)
+      .then(()=>{
+        console.log('saved!')
+        res.status(201).send()
+      })
+      .catch(err=> {
+        console.log('server saved answer but failed to photos')
+        res.status(500).send()
+      })
+    } else {
+      console.log('saved!')
+      res.status(201).send()
+    }
+
+  })
+  .catch(err=> {
+    console.log('server failed to save new question to DB')
+    res.status(500).send()
+  })
+})
+
+app.put('/qa/questions/:*/helpful', (req, res)=> {
+  let question_id = req.query.question_id || req.params[0];
+
+})
 
 app.listen(3000);
 console.log('Listening on port 3000');

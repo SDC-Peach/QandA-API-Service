@@ -31,7 +31,7 @@ pool.query(photosSchema, (err, res)=> {
   }
 })
 
-const questionsSchema = 'CREATE TABLE questions (id SERIAL PRIMARY KEY, product_id int NOT NULL, body varchar(1000) NOT NULL, date_written double precision, asker_name varchar(60) NOT NULL, asker_email varchar(60) NOT NULL, reported int, helpful int DEFAULT 0)';
+const questionsSchema = 'CREATE TABLE questions (question_id SERIAL PRIMARY KEY, product_id int NOT NULL, question_body varchar(1000) NOT NULL, question_date double precision, asker_name varchar(60) NOT NULL, asker_email varchar(60) NOT NULL, reported int, question_helpfulness int DEFAULT 0)';
 
 const copyCVS = function (inp) {
   return `COPY ${inp} FROM '/Users/bentanaka/QandA-API-Service/${inp}.csv' DELIMITER ',' CSV HEADER`
@@ -40,12 +40,12 @@ const alterReportedColumn = function(inp) {
   return `ALTER TABLE ${inp} ALTER COLUMN reported TYPE bool USING CASE WHEN reported=0 THEN false ELSE true END, ALTER COLUMN reported SET DEFAULT False`
 }
 
-const resetPrimaryKeySequence = function (inp) {
-  return `SELECT setval('${inp}_id_seq', (SELECT MAX(id) FROM ${inp}))`
+const resetPrimaryKeySequence = function (inp, idColName) {
+  return `SELECT setval('${inp}_${idColName}_seq', (SELECT MAX(${idColName}) FROM ${inp}))`
 }
 
-const alterUnixTimeToTimestamp = function (inp) {
-  return `ALTER TABLE ${inp} ALTER COLUMN date_written type varchar(60) USING to_char(to_timestamp(date_written/1000.0) at time zone 'UTC', 'yyyy-mm-ddThh24:mi:ss.ff3Z'), ALTER COLUMN date_written SET DEFAULT to_char(CURRENT_TIMESTAMP at time zone 'UTC', 'yyyy-mm-ddThh24:mi:ss.ff3Z')`
+const alterUnixTimeToTimestamp = function (inp, dateColName) {
+  return `ALTER TABLE ${inp} ALTER COLUMN ${dateColName} type varchar(60) USING to_char(to_timestamp(${dateColName}/1000.0) at time zone 'UTC', 'yyyy-mm-ddThh24:mi:ss.ff3Z'), ALTER COLUMN ${dateColName} SET DEFAULT to_char(CURRENT_TIMESTAMP at time zone 'UTC', 'yyyy-mm-ddThh24:mi:ss.ff3Z')`
 }
 
 const loadQuestionsDB = ()=> {
@@ -67,13 +67,13 @@ const loadQuestionsDB = ()=> {
               pool.end()
             } else {
               console.log('converted reported column to boolean');
-              pool.query(resetPrimaryKeySequence('questions'), (err, res)=> {
+              pool.query(resetPrimaryKeySequence('questions', 'question_id'), (err, res)=> {
                 if (err) {
                   console.log(err);
                   pool.end();
                 } else {
                   console.log('changed ID so its synced and next inserted row wont try to be ID 2');
-                  pool.query(alterUnixTimeToTimestamp('questions'), (err, res)=> {
+                  pool.query(alterUnixTimeToTimestamp('questions', 'question_date'), (err, res)=> {
                     if (err) {
                       console.log(err)
                       pool.end();
@@ -92,7 +92,7 @@ const loadQuestionsDB = ()=> {
   })
 }
 
-const answersSchema = 'CREATE TABLE answers (id SERIAL PRIMARY KEY, question_id int NOT NULL, body varchar(1000) NOT NULL, date_written double precision, answerer_name varchar(60) NOT NULL, answerer_email varchar(60) NOT NULL, reported int, helpful int DEFAULT 0)';
+const answersSchema = 'CREATE TABLE answers (answer_id SERIAL PRIMARY KEY, question_id int NOT NULL, body varchar(1000) NOT NULL, date double precision, answerer_name varchar(60) NOT NULL, answerer_email varchar(60) NOT NULL, reported int, helpful int DEFAULT 0)';
 
 const loadAnswersDB = ()=> {
   pool.query(answersSchema, (err, res)=> {
@@ -113,13 +113,13 @@ const loadAnswersDB = ()=> {
               pool.end()
             } else {
               console.log('converted reported column to boolean');
-              pool.query(resetPrimaryKeySequence('answers'), (err, res)=> {
+              pool.query(resetPrimaryKeySequence('answers', 'answer_id'), (err, res)=> {
                 if (err) {
                   console.log(err);
                   pool.end()
                 } else {
                   console.log('changed ID so its synced and next inserted row wont try to be ID 2');
-                  pool.query(alterUnixTimeToTimestamp('answers'), (err, res)=> {
+                  pool.query(alterUnixTimeToTimestamp('answers', 'date'), (err, res)=> {
                     if (err) {
                       console.log(err);
                       pool.end();

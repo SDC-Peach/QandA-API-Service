@@ -118,7 +118,6 @@ app.post('/qa/questions/:*/answers', (req, res)=> {
       console.log('saved!')
       res.status(201).send()
     }
-
   })
   .catch(err=> {
     console.log('server failed to save new question to DB')

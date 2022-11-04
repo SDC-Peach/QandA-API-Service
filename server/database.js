@@ -9,36 +9,35 @@ const pool = new Pool({
   port: POSTGRESQL_PORT,
 })
 
-const getQuestions = function (product_id, count) {
+function getQuestions (product_id, count) {
   return pool.query(`SELECT * FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}`)
 }
 
-const getQuestionAnswers = function (product_id, count) {
+function getQuestionAnswers (product_id, count) {
   return pool.query(`SELECT * FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count})`)
 }
 
-const getQuestionAnswersPhotos = function (product_id, count) {
+function getQuestionAnswersPhotos (product_id, count) {
   return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}))`)
 }
 
-const getAnswers = function (question_id, count) {
-
+function getAnswers (question_id, count) {
   return pool.query(`SELECT * FROM answers WHERE reported = false AND question_id='${question_id}' LIMIT ${count}`)
 }
 
-const getAnswersPhotos = function (question_id, count) {
+function getAnswersPhotos (question_id, count) {
   return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE reported = false AND question_id='${question_id}' LIMIT ${count})`)
 }
 
-const saveQuestion = function(formData) {
+function saveQuestion (formData) {
   return pool.query('INSERT INTO questions (product_id, question_body, asker_name, asker_email) VALUES ($1, $2, $3, $4)', [formData.product_id, formData.body, formData.name, formData.email])
 }
 
-const saveAnswer = function(question_id, {body, name, email}) {
+function saveAnswer (question_id, {body, name, email}) {
   return pool.query('INSERT INTO answers (question_id, body, answerer_name, answerer_email) VALUES ($1, $2, $3, $4) RETURNING answer_id', [question_id, body, name, email])
 }
 
-const savePhotos = function(answer_id, photos) {
+function savePhotos (answer_id, photos) {
   photos = photos.map((photo)=> {
     return `(${answer_id}, '${photo}')`
   })

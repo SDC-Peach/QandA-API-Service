@@ -32,5 +32,14 @@ prodID = '66642'
 // .then((res)=> console.log(res.data))
 
 
-axios.post('http://localhost:3000/qa/questions/:question_id/answers', {body: 'newesttestBEN', name: 'bobby', email: 'b@gmail.com', photos: []}, {params: {question_id: 234332}})
+// axios.post('http://localhost:3000/qa/questions/:question_id/answers', {body: 'newesttestBEN', name: 'bobby', email: 'b@gmail.com', photos: []}, {params: {question_id: 234332}})
+// .then((res)=> console.log(res.data))
+
+// axios.put('http://localhost:3000/qa/questions/:question_id/helpful', {}, {params: {question_id: 234332}})
+// .then((res)=> console.log(res.data))
+
+// axios.put('http://localhost:3000/qa/questions/:question_id/report', {}, {params: {question_id: 234329}})
+// .then((res)=> console.log(res.data))
+
+axios.put('http://localhost:3000/qa/answers/:answer_id/helpful', {}, {params: {answer_id: 457350}})
 .then((res)=> console.log(res.data))

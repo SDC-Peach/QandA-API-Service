@@ -88,7 +88,7 @@ app.get('/qa/questions/:*/answers', (req, res)=> {
 app.post('/qa/questions', (req, res)=> {
   saveQuestion(req.body)
   .then(val=> {
-    console.log('saved!')
+    console.log('saved question!')
     res.status(201).send()
   })
   .catch(err=> {
@@ -107,7 +107,7 @@ app.post('/qa/questions/:*/answers', (req, res)=> {
     if (req.body.photos.length > 0) {
       savePhotos(generatedAnswerID, req.body.photos)
       .then(()=>{
-        console.log('saved!')
+        console.log('saved answer!')
         res.status(201).send()
       })
       .catch(err=> {
@@ -120,7 +120,7 @@ app.post('/qa/questions/:*/answers', (req, res)=> {
     }
   })
   .catch(err=> {
-    console.log('server failed to save new question to DB')
+    console.log('server failed to save new answer to DB')
     res.status(500).send()
   })
 })

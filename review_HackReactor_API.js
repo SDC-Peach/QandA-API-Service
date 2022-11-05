@@ -28,7 +28,7 @@ prodID = '66642'
 // axios.post('http://localhost:3000/qa/questions', {body: 'testing-ben! tadf', name: 'bobby Joe', email: 'bb@gmail.com', product_id: 66642})
 // .then((res)=> console.log(res.data))
 
-// axios.post('http://localhost:3000/qa/questions/:88888/answers', {body: 'testing-ben! tadf', name: 'bobby Joe', photos: ['url1','url2','url3']})
+// axios.post('http://localhost:3000/qa/questions/:88888/answers', {body: 'testing-ben! tadf', name: 'bobby Joe',  email: 'b@gmail.com', photos: ['url1','url2','url3']})
 // .then((res)=> console.log(res.data))
 
 

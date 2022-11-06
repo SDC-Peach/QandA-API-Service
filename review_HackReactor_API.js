@@ -10,14 +10,14 @@ prodID = '66642'
 // })
 // .then((val)=> {console.log(val.data)})
 // .catch((err)=> {console.log(err)})
-
-// axios({
-//   method: 'get',
-//   url: `${URL}/qa/questions/?product_id=${prodID}&page=1&count=${10000}`,
-//   headers: { Authorization: TOKEN }
-// })
-// .then((val)=> {console.log(val.data)})
-// .catch((err)=> {console.log(err)})
+//641770 or 593291
+axios({
+  method: 'get',
+  url: `${URL}/qa/questions/593291/answers`,
+  headers: { Authorization: TOKEN }
+})
+.then((val)=> {console.log(val.data.results[1].photos)})
+.catch((err)=> {console.log(err)})
 
 // axios.get('http://localhost:3000/qa/questions', {params: {product_id: prodID, count: 100}})
 // .then((res)=> console.log(res.data))
@@ -41,5 +41,5 @@ prodID = '66642'
 // axios.put('http://localhost:3000/qa/questions/:question_id/report', {}, {params: {question_id: 234329}})
 // .then((res)=> console.log(res.data))
 
-axios.put('http://localhost:3000/qa/answers/:answer_id/helpful', {}, {params: {answer_id: 457350}})
-.then((res)=> console.log(res.data))
+// axios.put('http://localhost:3000/qa/answers/:answer_id/helpful', {}, {params: {answer_id: 457350}})
+// .then((res)=> console.log(res.data))

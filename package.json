@@ -4,8 +4,9 @@
   "description": "QandA service api for sdc",
   "main": "index.js",
   "scripts": {
-    "ETL": "node postgres_data_ETL.js",
-    "start-server": "node server/app.js"
+    "preETL": "psql postgres -U bentanaka -d qanda -f etl/schemas.sql",
+    "ETL": "node etl/postgres_data_ETL.js",
+    "start-server": "node server/app.js",
   },
   "repository": {
     "type": "git",

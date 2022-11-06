@@ -10,19 +10,19 @@ const pool = new Pool({
 })
 
 function getQuestions (product_id, count) {
-  return pool.query(`SELECT * FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}`)
+  return pool.query(`SELECT question_id,question_body,question_date,asker_name,question_helpfulness,reported FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}`)
 }
 
 function getQuestionAnswers (product_id, count) {
-  return pool.query(`SELECT * FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count})`)
+  return pool.query(`SELECT question_id,answer_id,body,date,answerer_name,helpfulness FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count})`)
 }
 
 function getQuestionAnswersPhotos (product_id, count) {
-  return pool.query(`SELECT * FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}))`)
+  return pool.query(`SELECT url,answer_id FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}))`)
 }
 
 function getAnswers (question_id, count) {
-  return pool.query(`SELECT * FROM answers WHERE reported = false AND question_id='${question_id}' LIMIT ${count}`)
+  return pool.query(`SELECT answer_id,body,date,answerer_name,helpfulness FROM answers WHERE reported = false AND question_id='${question_id}' LIMIT ${count}`)
 }
 
 function getAnswersPhotos (question_id, count) {

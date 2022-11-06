@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-test('get questions', ()=> {
+test('get QUESTIONS should return data in same formt as FEC API', ()=> {
   const expectedResults = {
     "product_id": "66641",
     "results": [{
@@ -67,7 +67,7 @@ test('get questions', ()=> {
   })
 })
 
-test('get answers', ()=> {
+test('get ANSWERS should return data in same formt as FEC API', ()=> {
   const expectedAnswers = {
     question: '3518948',
     page: 1,
@@ -108,7 +108,7 @@ test('get answers', ()=> {
   })
 })
 
-test ('it should post a question', ()=> {
+test ('post QUESTION should result in 1 new db record matching what was posted', ()=> {
 
   let mockPostQuestion = {body: `BEN POST TESTING ${Math.floor(Math.random()*200)}`, name: `BB ${Math.floor(Math.random()*200)}`, email: `BB${Math.floor(Math.random()*200)}ant@gmail.com`, product_id: 66609};
 
@@ -129,10 +129,12 @@ test ('it should post a question', ()=> {
       .then((res)=> {
         let resultz = res.data.results.sort((a , b)=> {return b.question_id - a.question_id})
         let endingCount = resultz.length;
+
         expect(endingCount).toBe(startingCount+1);
 
         let lastQuestionAdded = resultz[0]
         expect(lastQuestionAdded.question_body).toBe(mockPostQuestion.body);
+
         expect(lastQuestionAdded.asker_name).toBe(mockPostQuestion.name);
         expect(lastQuestionAdded.question_helpfulness).toBe(0);
         expect(lastQuestionAdded.reported).toBe(false);
@@ -143,13 +145,14 @@ test ('it should post a question', ()=> {
   })
 })
 
-test ('it should post an answer', ()=> {
+test ('post ANSWER should result in 1 new db record matching what was posted', ()=> {
   let mockQuestion_id = 234217;
   let mockPostAnswer = {body: `BEN POST TESTING ${Math.floor(Math.random()*200)}`, name: `BB ${Math.floor(Math.random()*200)}`, email: `BB${Math.floor(Math.random()*200)}ant@gmail.com`, photos: ['http://fsfd.com', 'asdf.com','xx','http://yy.com','dd']};
 
   return axios({
     method: 'get',
-    url: `http://localhost:3000/qa/questions/${mockQuestion_id}/answers`
+    url: `http://localhost:3000/qa/questions/${mockQuestion_id}/answers`,
+    params: {page: 1, count:100000}
   })
   .then((res)=>{
     let startingCount = res.data.results.length;
@@ -157,7 +160,8 @@ test ('it should post an answer', ()=> {
     .then((res)=> {
       return axios({
         method: 'get',
-        url: `http://localhost:3000/qa/questions/${mockQuestion_id}/answers`
+        url: `http://localhost:3000/qa/questions/${mockQuestion_id}/answers`,
+        params: {page: 1, count:100000}
       })
       .then((res)=> {
         let resultz = res.data.results.sort((a , b)=> {return b.answer_id - a.answer_id})

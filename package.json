@@ -6,7 +6,7 @@
   "scripts": {
     "preETL": "psql postgres -U bentanaka -d qanda -f etl/schemas.sql",
     "ETL": "node etl/postgres_data_ETL.js",
-    "start-server": "node server/app.js",
+    "start-server": "node server/app.js"
   },
   "repository": {
     "type": "git",

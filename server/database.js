@@ -14,7 +14,7 @@ function getQuestions (product_id, count) {
 }
 
 function getQuestionAnswers (product_id, count) {
-  return pool.query(`SELECT answers.question_id,answers.answer_id as id,answers.body,answers.date,answers.answerer_name,answers.helpfulness, array_agg(url) photos FROM answers LEFT OUTER JOIN photos ON answers.answer_id = photos.answer_id WHERE answers.reported = false AND answers.question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}
+  return pool.query(`SELECT answers.question_id,answers.answer_id as id,answers.body,answers.date,answers.answerer_name,answers.helpfulness, array_remove(array_agg(url), NULL) AS photos FROM answers LEFT OUTER JOIN photos ON answers.answer_id = photos.answer_id WHERE answers.reported = false AND answers.question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}
   ) GROUP BY answers.answer_id `)
 }
 

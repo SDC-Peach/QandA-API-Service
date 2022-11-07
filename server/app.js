@@ -14,27 +14,20 @@ app.get('/qa/questions', (req, res)=> {
   .then((res) => {return res.rows})
   .catch((err) => {return 'err'})
 
-  let promise3 = getQuestionAnswersPhotos(req.query.product_id, req.query.count)
-  .then((res) => {return res.rows})
-  .catch((err) => {return 'err'})
+  // let promise3 = getQuestionAnswersPhotos(req.query.product_id, req.query.count)
+  // .then((res) => {return res.rows})
+  // .catch((err) => {return 'err'})
 
-  Promise.all([promise1, promise2, promise3])
-  .then(([questions, answers, photos])=> {
-    if (questions === 'err' || answers === 'err' || photos === 'err') {
+  Promise.all([promise1, promise2])
+  .then(([questions, answers])=> {
+
+    if (questions === 'err' || answers === 'err') {
       res.status(500).send()
     } else {
       questions.forEach((question)=> {
         question.answers = {}
         answers.forEach((answer)=> {
           if (answer.question_id === question.question_id) {
-            answer.id = answer.answer_id;
-            answer.photos = []
-            photos.forEach((photo)=> {
-              if (photo.answer_id === answer.id) {
-                answer.photos.push(photo.url)
-              }
-            })
-            delete answer.answer_id;
             delete answer.question_id;
             question.answers[answer.id] = answer
           }

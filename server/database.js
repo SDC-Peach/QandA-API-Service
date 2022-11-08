@@ -18,10 +18,6 @@ function getQuestionAnswers (product_id, count) {
   ) GROUP BY answers.answer_id `)
 }
 
-function getQuestionAnswersPhotos (product_id, count) {
-  return pool.query(`SELECT url,answer_id FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}))`)
-}
-
 function getAnswers (question_id, count) {
   return pool.query(`SELECT answer_id,body,date,answerer_name,helpfulness FROM answers WHERE reported = false AND question_id='${question_id}' LIMIT ${count}`)
 }
@@ -65,7 +61,6 @@ function flagAnswerAsReported(answer_id) {
 module.exports = {
   getQuestions: getQuestions,
   getQuestionAnswers: getQuestionAnswers,
-  getQuestionAnswersPhotos: getQuestionAnswersPhotos,
   getAnswers: getAnswers,
   getAnswersPhotos: getAnswersPhotos,
   saveQuestion: saveQuestion,

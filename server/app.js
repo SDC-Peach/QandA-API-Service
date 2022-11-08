@@ -1,5 +1,5 @@
 const express = require('express');
-const {getQuestions, getQuestionAnswers, getQuestionAnswersPhotos, getAnswers, getAnswersPhotos, saveQuestion, saveAnswer, savePhotos, incrementQuestionHelpfulnessCount, flagQuestionAsReported, incrementAnswerHelpfulnessCount, flagAnswerAsReported} = require('./database.js')
+const {getQuestions, getQuestionAnswers, getAnswers, getAnswersPhotos, saveQuestion, saveAnswer, savePhotos, incrementQuestionHelpfulnessCount, flagQuestionAsReported, incrementAnswerHelpfulnessCount, flagAnswerAsReported} = require('./database.js')
 
 var app = express();
 app.use(express.json());
@@ -13,10 +13,6 @@ app.get('/qa/questions', (req, res)=> {
   let promise2 = getQuestionAnswers(req.query.product_id, req.query.count)
   .then((res) => {return res.rows})
   .catch((err) => {return 'err'})
-
-  // let promise3 = getQuestionAnswersPhotos(req.query.product_id, req.query.count)
-  // .then((res) => {return res.rows})
-  // .catch((err) => {return 'err'})
 
   Promise.all([promise1, promise2])
   .then(([questions, answers])=> {
@@ -159,4 +155,3 @@ app.put('/qa/answers/*/report', (req, res)=> {
 
 app.listen(3000);
 console.log('Listening on port 3000');
-

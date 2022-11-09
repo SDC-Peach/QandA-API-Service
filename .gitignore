@@ -1,4 +1,3 @@
 config.js
-*.csv
 node_modules/
 review_HackReactor_API.js

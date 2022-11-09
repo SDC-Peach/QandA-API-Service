@@ -14,11 +14,8 @@ function getQuestions (product_id, count) {
 }
 
 function getQuestionAnswers (product_id, count) {
-  return pool.query(`SELECT question_id,answer_id,body,date,answerer_name,helpfulness FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count})`)
-}
-
-function getQuestionAnswersPhotos (product_id, count) {
-  return pool.query(`SELECT url,answer_id FROM photos WHERE answer_id IN (SELECT answer_id FROM answers WHERE reported = false AND question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}))`)
+  return pool.query(`SELECT answers.question_id,answers.answer_id as id,answers.body,answers.date,answers.answerer_name,answers.helpfulness, array_remove(array_agg(url), NULL) AS photos FROM answers LEFT OUTER JOIN photos ON answers.answer_id = photos.answer_id WHERE answers.reported = false AND answers.question_id IN (SELECT question_id FROM questions WHERE product_id='${product_id}' AND reported = false LIMIT ${count}
+  ) GROUP BY answers.answer_id `)
 }
 
 function getAnswers (question_id, count) {
@@ -64,7 +61,6 @@ function flagAnswerAsReported(answer_id) {
 module.exports = {
   getQuestions: getQuestions,
   getQuestionAnswers: getQuestionAnswers,
-  getQuestionAnswersPhotos: getQuestionAnswersPhotos,
   getAnswers: getAnswers,
   getAnswersPhotos: getAnswersPhotos,
   saveQuestion: saveQuestion,

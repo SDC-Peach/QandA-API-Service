@@ -1,5 +1,5 @@
 const express = require('express');
-const {getQuestions, getQuestionAnswers, getQuestionAnswersPhotos, getAnswers, getAnswersPhotos, saveQuestion, saveAnswer, savePhotos, incrementQuestionHelpfulnessCount, flagQuestionAsReported, incrementAnswerHelpfulnessCount, flagAnswerAsReported} = require('./database.js')
+const {getQuestions, getQuestionAnswers, getAnswers, getAnswersPhotos, saveQuestion, saveAnswer, savePhotos, incrementQuestionHelpfulnessCount, flagQuestionAsReported, incrementAnswerHelpfulnessCount, flagAnswerAsReported} = require('./database.js')
 
 var app = express();
 app.use(express.json());
@@ -14,27 +14,16 @@ app.get('/qa/questions', (req, res)=> {
   .then((res) => {return res.rows})
   .catch((err) => {return 'err'})
 
-  let promise3 = getQuestionAnswersPhotos(req.query.product_id, req.query.count)
-  .then((res) => {return res.rows})
-  .catch((err) => {return 'err'})
+  Promise.all([promise1, promise2])
+  .then(([questions, answers])=> {
 
-  Promise.all([promise1, promise2, promise3])
-  .then(([questions, answers, photos])=> {
-    if (questions === 'err' || answers === 'err' || photos === 'err') {
+    if (questions === 'err' || answers === 'err') {
       res.status(500).send()
     } else {
       questions.forEach((question)=> {
         question.answers = {}
         answers.forEach((answer)=> {
           if (answer.question_id === question.question_id) {
-            answer.id = answer.answer_id;
-            answer.photos = []
-            photos.forEach((photo)=> {
-              if (photo.answer_id === answer.id) {
-                answer.photos.push(photo.url)
-              }
-            })
-            delete answer.answer_id;
             delete answer.question_id;
             question.answers[answer.id] = answer
           }
@@ -89,11 +78,9 @@ app.get('/qa/questions/*/answers', (req, res)=> {
 app.post('/qa/questions', (req, res)=> {
   saveQuestion(req.body)
   .then(val=> {
-    console.log('saved question!')
     res.status(201).send()
   })
   .catch(err=> {
-    console.log('server failed to save new question to DB')
     res.status(500).send()
   })
 })
@@ -108,20 +95,16 @@ app.post('/qa/questions/*/answers', (req, res)=> {
     if (req.body.photos.length > 0) {
       savePhotos(generatedAnswerID, req.body.photos)
       .then(()=>{
-        console.log('saved answer!')
         res.status(201).send()
       })
       .catch(err=> {
-        console.log('server saved answer but failed to photos')
         res.status(500).send()
       })
     } else {
-      console.log('saved!')
       res.status(201).send()
     }
   })
   .catch(err=> {
-    console.log('server failed to save new answer to DB')
     res.status(500).send()
   })
 })
@@ -172,4 +155,3 @@ app.put('/qa/answers/*/report', (req, res)=> {
 
 app.listen(3000);
 console.log('Listening on port 3000');
-

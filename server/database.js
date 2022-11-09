@@ -1,12 +1,12 @@
 const {Pool} = require('pg');
-const {POSTGRESQL_USER, POSTGRESQL_PASSWORD, POSTGRESQL_PORT} = require('../config.js');
+require('dotenv').config();
 
 const pool = new Pool({
-  user: POSTGRESQL_USER,
-  host: 'localhost',
-  database: 'qanda',
-  password: POSTGRESQL_PASSWORD,
-  port: POSTGRESQL_PORT,
+  user: process.env.POSTGRESQL_USER,
+  host: process.env.POSTGRESQL_HOST,
+  database: process.env.POSTGRESQL_DATABASE,
+  password: process.env.POSTGRESQL_PASSWORD,
+  port: process.env.POSTGRESQL_PORT,
 })
 
 function getQuestions (product_id, count) {

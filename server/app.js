@@ -6,7 +6,7 @@ app.use(express.json());
 app.use(express.static('static_files'));
 
 app.get('/qa/questions', (req, res)=> {
-
+  console.log(req.query.product_id)
   let promise1 = getQuestions(req.query.product_id, req.query.count)
   .then((res) => {return res.rows})
   .catch((err) => {return 'err'})

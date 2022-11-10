@@ -3,6 +3,7 @@ const {getQuestions, getQuestionAnswers, getAnswers, getAnswersPhotos, saveQuest
 
 var app = express();
 app.use(express.json());
+app.use(express.static('static_files'));
 
 app.get('/qa/questions', (req, res)=> {
 

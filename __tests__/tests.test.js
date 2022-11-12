@@ -1,4 +1,5 @@
 const axios = require('axios');
+const {LRUCache} = require('../server/cache.js')
 
 test('get QUESTIONS should return data in same formt as FEC API', ()=> {
   const expectedResults = {
@@ -71,7 +72,7 @@ test('get ANSWERS should return data in same formt as FEC API', ()=> {
   const expectedAnswers = {
     question: '3518948',
     page: 1,
-    count: 5,
+    count: "100000",
     results: [
       {
         answer_id: 6879287,
@@ -180,4 +181,29 @@ test ('post ANSWER should result in 1 new db record matching what was posted', (
     })
   })
 
+})
+
+test('it should cache properly', ()=> {
+  let testCache = new LRUCache(5);
+  testCache.set('a', 1);
+  testCache.set('b', 2);
+  testCache.set('c', 3);
+  testCache.set('d', 4);
+  testCache.set('e', 5);
+  expect(testCache.get('d')).toBe(4);
+  expect(testCache.get('z')).toBe(null);
+  testCache.set('a', 'a1');
+  testCache.set('f', 6);
+  expect(testCache.get('b')).toBe(null);
+  expect(testCache.get('a')).toBe('a1');
+  testCache.delete('c');
+  testCache.delete('f');
+  expect(testCache.get('c')).toBe(null);
+  expect(testCache.get('e')).toBe(5);
+  testCache.set('g', 7);
+  expect(testCache.get('d')).toBe(4);
+  testCache.set('h', 8);
+  expect(testCache.get('a')).toBe('a1');
+  testCache.set('i', 9);
+  expect(testCache.get('e')).toBe(null);
 })

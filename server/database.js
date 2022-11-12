@@ -58,6 +58,10 @@ function flagAnswerAsReported(answer_id) {
   return pool.query(`UPDATE answers SET reported = true WHERE answer_id = ${answer_id}`)
 }
 
+function findProductID(question_id) {
+  return pool.query(`SELECT product_id FROM questions WHERE question_id= ${question_id} LIMIT 1`)
+}
+
 module.exports = {
   getQuestions: getQuestions,
   getQuestionAnswers: getQuestionAnswers,
@@ -69,5 +73,6 @@ module.exports = {
   incrementQuestionHelpfulnessCount: incrementQuestionHelpfulnessCount,
   flagQuestionAsReported: flagQuestionAsReported,
   incrementAnswerHelpfulnessCount: incrementAnswerHelpfulnessCount,
-  flagAnswerAsReported: flagAnswerAsReported
+  flagAnswerAsReported: flagAnswerAsReported,
+  findProductID: findProductID
 }
